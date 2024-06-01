@@ -16,6 +16,8 @@ const { memberCheck } = require('../controllers/member_controller');
 
 /**
  * @swagger
+ * components:
+ * schemas:
  * /api/books:
  *   get:
  *     summary: Retrieves a list of available books
