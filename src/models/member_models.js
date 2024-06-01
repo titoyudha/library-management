@@ -1,15 +1,24 @@
-const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database_config');
+const { DataTypes } = require('sequelize');
+const Book = require('../models/book_models');
 
-const Member = sequelize.define('Member', {
-  code: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-});
+module.exports = () => {
+  const Member = sequelize.define('Member', {
+    code: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+    },
+    name: DataTypes.STRING,
+    penalized: DataTypes.BOOLEAN,
+    penalizedUntil: DataTypes.DATE,
 
-module.exports = Member;
+    associate: function (models) {
+      Member.hasMany(Book, {
+        foreignKey: 'borrowedBy',
+        as: 'borrowedBooks',
+      });
+    },
+  });
+
+  return Member;
+};

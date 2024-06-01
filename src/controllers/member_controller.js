@@ -1,38 +1,31 @@
+const Book = require('../models/book_models');
 const Member = require('../models/member_models');
-const Borrow = require('../models/borrow_models');
 
-const getAllMembers = async (req, res) => {
+const memberCheck = async (req, res) => {
   try {
+    // Show all members and the number of books each member has borrowed
     const members = await Member.findAll({
-      include: {
-        model: Borrow,
-        attributes: ['id'],
-      },
+      include: [
+        {
+          model: Book,
+          attributes: ['id'],
+          where: { returnedAt: null },
+        },
+      ],
     });
-    res.json(
-      members.map((member) => ({
-        id: member.id,
-        code: member.code,
-        name: member.name,
-        borrowedBooksCount: member.Borrows.length,
-      }))
-    );
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 
-const createMember = async (req, res) => {
-  try {
-    const { code, name } = req.body;
-    const member = await Member.create({ code, name });
-    res.status(201).json(member);
+    const membersInfo = members.map((member) => ({
+      id: member.id,
+      name: member.name,
+      borrowedBooksCount: member.Books.length,
+    }));
+
+    res.json(membersInfo);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
 module.exports = {
-  getAllMembers,
-  createMember,
+  memberCheck,
 };
